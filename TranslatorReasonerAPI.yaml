@@ -244,7 +244,60 @@ components:
             with is_set=True is connected to a QNode (n2) with is_set=True,
             each n1 must be connected to at least one n2.
           default: false
-      additionalProperties: true
+        additionalProperties:
+          $ref: '#/components/schemas/PropertyConstraint'
+    PropertyConstraint:
+      description: Additional property constraint
+      oneOf:
+        - description: >-
+            Simple property constraint using an implicit equal_to operator
+          not:
+            - type: object
+        - description: Numerical property constraint
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - equal_to
+                - not_equal_to
+                - greater_than
+                - less_than
+              default: equal_to
+            value:
+              type: number
+          required:
+            - value
+        - description: One-of property constraint
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - one_of
+            value:
+              type: array
+              items:
+                not:
+                  - type: object
+          required:
+            - operator
+            - value
+        - description: Regex property constraint
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - matches
+            value:
+              type: string
+              description: >-
+                A regular expression, which should be valid according to the
+                ECMA 262 dialect.
+          required:
+            - operator
+            - value
     QEdge:
       type: object
       description: An edge in the QueryGraph
@@ -263,10 +316,11 @@ components:
           type: string
           example: https://www.uniprot.org/uniprot/P00738
           description: Corresponds to the @id of target node of this edge
-      additionalProperties: true
       required:
         - source_id
         - target_id
+      additionalProperties:
+        $ref: '#/components/schemas/PropertyConstraint'
     Node:
       type: object
       description: A node in the knowledge graph
