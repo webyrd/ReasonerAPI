@@ -263,6 +263,8 @@ components:
                 - '<>'
                 - '>'
                 - '<'
+                - '>='
+                - '<='
               default: '='
             value:
               type: number
